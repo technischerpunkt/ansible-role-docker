@@ -1,0 +1,22 @@
+---
+- name: install docker
+  package:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - docker-ce
+      - python-docker
+
+- name: enable docker service
+  service:
+    name: docker
+    state: started
+    enabled: True
+
+- name: setup cronjob to delete stale images every week
+  cron:
+    name: cleanup stale docker images
+    job: docker system prune --all --force > /dev/null
+    minute: "42"
+    hour: "2"
+    weekday: "3"
